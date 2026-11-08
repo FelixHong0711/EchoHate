@@ -2,9 +2,9 @@
 
 Submitted to the ACL Rolling Review (ARR) October cycle.
 
-**Partial release.** This repository currently contains the encoder portion only: preprocessing, the RoBERTa baseline, variability-based example selection, and mechanism-supervised training. The LLM teacher (mechanism annotation) and uncertainty-guided deferral are withheld.
+**Partial release.** This repository is the encoder code: preprocessing, the RoBERTa baseline, variability-based example selection, and mechanism-supervised training. The LLM teacher (mechanism annotation) and uncertainty-guided deferral are withheld.
 
-**The withheld code will be released upon acceptance.** Until then, mechanism labels must be supplied as a CSV. Do not expect LLM annotation or inference-time deferral in this snapshot.
+**The withheld code will be released upon acceptance.** This snapshot does not include datasets, mechanism labels, or cluster jobs. Those inputs are supplied by whoever runs the code.
 
 Run commands from this repository root. Set `ECHOHATE_ROOT` if the process cwd is elsewhere.
 
@@ -20,7 +20,7 @@ label for cross-entropy and, when enabled, the pairwise cosine-margin contrastiv
 loss on the binary logits. A subset of training rows additionally supplies one
 mechanism label to an auxiliary classification head.
 
-You provide those mechanism labels in a CSV. This release does not generate them.
+The mechanism labels are an input CSV. This release does not generate them.
 
 ## Pipeline
 
@@ -66,8 +66,6 @@ SBIC (offensive vs non-offensive):
 - Neutral or Benign Speech
 - Counter Speech
 
-Example: [`examples/mechanism_labels.csv`](examples/mechanism_labels.csv).
-
 ```bash
 python -m pipeline stage2 mech_distill \
   --dataset IHC \
@@ -100,7 +98,7 @@ Environment:
 
 - `ECHOHATE_ROOT` — repository root
 - `ECHOHATE_DATA_ROOT` / `ECHOHATE_DATA_SEED_DIR` — data layout overrides
-- `HF_TOKEN` / `HUGGINGFACE_HUB_TOKEN` — Hugging Face downloads, or `secrets/hf_token` (gitignored)
+- `HF_TOKEN` / `HUGGINGFACE_HUB_TOKEN` — Hugging Face downloads, if the model is gated
 
 ## Install
 
@@ -191,11 +189,11 @@ pipeline/
   stage2/           baseline, mech_distill, checkpoint eval
 config/
   echohate_project_config.json
-examples/
-  mechanism_labels.csv
 ```
 
 ## Data layout
+
+The caller provides these files. The repository does not ship them.
 
 ```
 data/<SEED>/

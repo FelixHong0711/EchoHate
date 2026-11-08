@@ -1,7 +1,5 @@
-# Secrets — never commit live credentials (examples OK)
-secrets/hf_token
-secrets/hpc_password
-secrets/openai_api_key
+# Local credentials — never commit
+secrets/
 
 # Python
 __pycache__/

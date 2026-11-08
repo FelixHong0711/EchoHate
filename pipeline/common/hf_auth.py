@@ -1,6 +1,6 @@
 """Hugging Face token lookup for encoder downloads.
 
-Reads ``HF_TOKEN`` / ``HUGGINGFACE_HUB_TOKEN`` or ``secrets/hf_token`` (gitignored).
+Reads ``HF_TOKEN`` / ``HUGGINGFACE_HUB_TOKEN``, or a local ``secrets/hf_token`` if one exists.
 """
 
 from __future__ import annotations

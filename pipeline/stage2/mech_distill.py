@@ -1243,8 +1243,7 @@ def train_one(
             "Pass --accepted_selected_k_csv (columns: row_id, mechanism) or --llm_file. "
             "row_id values are train_0, train_1, ... in train.csv order, and mechanism "
             "must be one of the closed labels for this dataset's task "
-            "(hate: 8 labels; SBIC/offensive: 5 labels). "
-            "See README.md and examples/mechanism_labels.csv."
+            "(hate: 8 labels; SBIC/offensive: 5 labels)."
         )
 
     mech_aux_mode = str(getattr(args, "mech_aux_mode", "mechanism") or "mechanism")
