@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""Unified CLI: python -m pipeline <stage> <module> [args…]
-
-Encoder stages only. LLM mechanism annotation and uncertainty-guided deferral
-ship upon acceptance.
-"""
+"""Unified CLI: python -m pipeline <stage> <module> [args…]"""
 
 from __future__ import annotations
 

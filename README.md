@@ -189,8 +189,6 @@ config/
 
 ## Data layout
 
-The caller provides these files. The repository does not ship them.
-
 ```
 data/<SEED>/
   <Dataset>/
@@ -204,8 +202,4 @@ data/<SEED>/
       encoder_fft_mech/
 ```
 
-## Partial release
-
-This repository is the encoder code: preprocessing, the RoBERTa baseline, variability-based example selection, and mechanism-supervised training. The LLM teacher (mechanism annotation) and uncertainty-guided deferral are withheld.
-
-The withheld code will be released upon acceptance. This snapshot does not include datasets, mechanism labels, or cluster jobs. Those inputs are supplied by whoever runs the code.
+LLM mechanism annotation and uncertainty-guided deferral will be released upon acceptance.

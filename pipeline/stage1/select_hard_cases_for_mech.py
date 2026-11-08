@@ -37,7 +37,6 @@ Examples::
       --mirror-selection-gmm
 
 Then train with ``python -m pipeline stage2 mech_distill`` and a mechanism-label CSV.
-LLM annotation and deferral are not in this release.
 """
 
 from __future__ import annotations
@@ -394,7 +393,6 @@ def _print_next_steps(method: str, mirror: bool) -> None:
     print("    --accepted_selected_k_csv <mechanism_labels.csv> \\")
     print("    --lambda_mech 0.05 --ce_contrastive_lambda 0.5")
     print("row_id in that CSV is train_<index> in train.csv order.")
-    print("LLM annotation and uncertainty-guided deferral are not in this release.")
     if not mirror:
         print(
             "\nNote: --mirror-selection-gmm was not set. "
