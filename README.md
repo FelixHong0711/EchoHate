@@ -2,10 +2,6 @@
 
 Submitted to the ACL Rolling Review (ARR) October cycle.
 
-**Partial release.** This repository is the encoder code: preprocessing, the RoBERTa baseline, variability-based example selection, and mechanism-supervised training. The LLM teacher (mechanism annotation) and uncertainty-guided deferral are withheld.
-
-**The withheld code will be released upon acceptance.** This snapshot does not include datasets, mechanism labels, or cluster jobs. Those inputs are supplied by whoever runs the code.
-
 Run commands from this repository root. Set `ECHOHATE_ROOT` if the process cwd is elsewhere.
 
 ```bash
@@ -13,14 +9,14 @@ python -m pipeline help
 python -m pipeline.preprocessing --help
 ```
 
-## What this release trains
+## Encoder
 
 The encoder is RoBERTa-large. Every training example uses the ground-truth binary
 label for cross-entropy and, when enabled, the pairwise cosine-margin contrastive
 loss on the binary logits. A subset of training rows additionally supplies one
 mechanism label to an auxiliary classification head.
 
-The mechanism labels are an input CSV. This release does not generate them.
+Pass mechanism labels in a CSV (`--accepted_selected_k_csv`).
 
 ## Pipeline
 
@@ -208,6 +204,8 @@ data/<SEED>/
       encoder_fft_mech/
 ```
 
-## Full release upon acceptance
+## Partial release
 
-This snapshot is intentionally incomplete. Upon acceptance, the same repository will be updated to add the complete code.
+This repository is the encoder code: preprocessing, the RoBERTa baseline, variability-based example selection, and mechanism-supervised training. The LLM teacher (mechanism annotation) and uncertainty-guided deferral are withheld.
+
+The withheld code will be released upon acceptance. This snapshot does not include datasets, mechanism labels, or cluster jobs. Those inputs are supplied by whoever runs the code.

@@ -2,6 +2,9 @@
 """
 EchoHate: encoder RoBERTa training with optional mechanism auxiliary loss.
 
+Mechanism strings are an input (``--accepted_selected_k_csv``). The LLM teacher
+that produces them is withheld and will be released upon acceptance.
+
 Default fine-tune hyperparameters match roberta_baseline
 (batch 8, lr 1e-5, wd 0.01, warmup 0, max_length 256). Full encoder fine-tune (FFT) only.
 
