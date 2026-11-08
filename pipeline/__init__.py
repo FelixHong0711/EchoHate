@@ -1,6 +1,6 @@
 """EchoHate encoder pipeline (preprocessing, variability selection, mechanism-supervised training).
 
-LLM mechanism annotation and uncertainty-guided deferral will be released upon acceptance.
+Upon acceptance, the repository will be updated to include the complete code.
 """
 
 from pipeline.common.paths import ECHOHATE_ROOT

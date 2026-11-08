@@ -202,4 +202,4 @@ data/<SEED>/
       encoder_fft_mech/
 ```
 
-LLM mechanism annotation and uncertainty-guided deferral will be released upon acceptance.
+Upon acceptance, the repository will be updated to include the complete code.
