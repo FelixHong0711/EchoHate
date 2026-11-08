@@ -1,0 +1,8 @@
+row_id,mechanism
+train_0,Dehumanization
+train_1,Group Vilification
+train_2,In-group Victimhood Framing
+train_3,Inferiority
+train_4,Not Offensive
+train_5,Support for Hateful Entities
+train_6,Threatening and Incitement

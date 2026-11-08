@@ -16,7 +16,7 @@ label for cross-entropy and, when enabled, the pairwise cosine-margin contrastiv
 loss on the binary logits. A subset of training rows additionally supplies one
 mechanism label to an auxiliary classification head.
 
-Pass mechanism labels in a CSV (`--accepted_selected_k_csv`).
+Pass mechanism labels in a CSV (`--accepted_selected_k_csv`). A small annotated IHC slice is in [`sample/IHC/`](sample/IHC/).
 
 ## Pipeline
 
@@ -133,6 +133,27 @@ Commands: `split`, `dynahate`, `ihc`, `ethos`, `sbic`, `hateval`,
 **Split policy:** DynaHate and SBIC keep official splits where available; IHC merges
 stages then random 80/10/10; other datasets follow each ingest script.
 
+## Sample
+
+`sample/IHC/` has 12 training rows, 4 validation rows, and 4 test rows. The seven hate training rows have mechanism labels in `sample/IHC/mechanism_labels.csv`.
+
+```bash
+python -m pipeline stage2 mech_distill \
+  --dataset IHC \
+  --data_root sample \
+  --model_name roberta-base \
+  --accepted_selected_k_csv sample/IHC/mechanism_labels.csv \
+  --output_dir data/sample_run \
+  --lambda_mech 0.05 \
+  --ce_contrastive_lambda 0.5 \
+  --contrastive_margin 0.75 \
+  --num_epochs 1 \
+  --batch_size 4 \
+  --max_length 64
+```
+
+Paper runs use RoBERTa-large and the full splits. This command only checks that training and validation run.
+
 ## Typical run
 
 Replace `<SEED>` with the data bucket (for example `seed_0_mech`).
@@ -185,6 +206,8 @@ pipeline/
   stage2/           baseline, mech_distill, checkpoint eval
 config/
   echohate_project_config.json
+sample/
+  IHC/              small annotated slice
 ```
 
 ## Data layout
