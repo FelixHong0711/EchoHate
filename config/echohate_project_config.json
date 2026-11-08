@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "description": "Single source of truth. Python: pipeline.common.project_config.",
+
+  "seeds": {
+    "description": "Split uses create_split_random_state (42). Encoder/LLM stages use random_state.",
+    "random_state": 42,
+    "seed_sweep": [0, 42, 44, 123, 1234],
+    "create_split_random_state": 42
+  },
+
+  "split_layout": {
+    "description": "8/1/1 = 80% train / 10% validation / 10% test (811). CSVs: train.csv, validation.csv, test.csv.",
+    "train_frac": 0.8,
+    "validation_frac": 0.1,
+    "test_frac": 0.1,
+    "splitted_data_subdir_override": "splitted_data_80_10_10"
+  },
+
+  "training": {
+    "description": "RoBERTa-family fine-tune defaults (shared baseline / distill / Slurm).",
+    "num_epochs": 6,
+    "batch_size": 16,
+    "eval_batch_size": 16,
+    "learning_rate": "1e-5",
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.0,
+    "max_length": 256,
+    "pos_weight_mode": "none",
+    "class_weight_target": "pos",
+    "pad_to_max_length": 1,
+    "no_eval_each_epoch": 0
+  },
+
+  "hpc": {
+    "description": "Optional local defaults only — not used at runtime. Set HPC_USER, HPC_HOST, and ECHOHATE_HPC_PROFILE in your shell.",
+    "default_host": "",
+    "default_profile": "",
+    "default_user": ""
+  },
+
+  "data_layout": {
+    "description": "Submit/sync defaults (ECHOHATE_DATA_SEED_DIR, DATASET). Empty default_data_seed_dir => seed_<random_state>.",
+    "default_dataset": "IHC",
+    "default_data_seed_dir": "seed_42_model"
+  },
+
+  "dataset_tasks": {
+    "description": "LLM prompt task per dataset. default=hate; SBIC uses offensive (OFFENSIVE/NOT_OFFENSIVE).",
+    "default": "hate",
+    "SBIC": "offensive"
+  }
+}

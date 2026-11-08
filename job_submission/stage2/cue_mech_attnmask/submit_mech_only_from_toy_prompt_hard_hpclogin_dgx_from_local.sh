@@ -1,0 +1,130 @@
+#!/usr/bin/env bash
+# hpclogin DGX wrapper → submit_mech_only_from_toy_prompt_hard_from_local.sh
+#
+# HatEval eacl — all encoders × phi+qwen mech-only:
+#   export HPC_RA=/home/remote/hohuu/RA HPC_RA_RESOLVE=0
+#   DATASETS=HatEval ECHOHATE_DATA_SEED_DIR=eacl_seed0 HARD_ENCODERS=all \
+#     bash job_submission/stage2/cue_mech_attnmask/submit_mech_only_from_toy_prompt_hard_hpclogin_dgx_from_local.sh
+#
+# Full cue (42 jobs/teacher = 7 e_init × 6 λ_mech); grids survive ambient wipe:
+#   APPROACH=mech ENCODER_RUN_TAG=_mech_only \
+#     HARD_ENCODERS=roberta_large_baseline_wCL,roberta_large_baseline_woCL \
+#     bash …/submit_mech_only_from_toy_prompt_hard_hpclogin_dgx_from_local.sh
+#
+set -euo pipefail
+
+unset HPC_HOST HPC_DIR 2>/dev/null || true
+export ECHOHATE_HPC_PROFILE=hpclogin_dgx
+export USE_LEGACY_HPC_LOGIN=1
+export HPC_RA_RESOLVE="${HPC_RA_RESOLVE:-0}"
+export HPC_RA="${HPC_RA:-/scratch/hohuu/RA}"
+
+# Preserve caller grids/tags before ambient wipe (otherwise full-cue λ grid is lost
+
+_SAVED_CUE_LAMBDA_MECH_GRID="${CUE_LAMBDA_MECH_GRID:-}"
+_SAVED_E_INIT_GRID="${E_INIT_GRID:-}"
+_SAVED_LAMBDA_MECH_GRID="${LAMBDA_MECH_GRID:-}"
+_SAVED_LAMBDA_TARGET_GRID="${LAMBDA_TARGET_GRID:-}"
+_SAVED_TARGET_NONE_POLICY="${TARGET_NONE_POLICY:-}"
+_SAVED_PROMPT_MODE="${PROMPT_MODE:-}"
+_SAVED_TARGET_ONLY="${TARGET_ONLY:-}"
+_SAVED_ENCODER_RUN_TAG="${ENCODER_RUN_TAG:-}"
+_SAVED_APPROACH="${APPROACH:-}"
+_SAVED_AMP_POOL="${AMP_POOL:-}"
+_SAVED_FUSION_LEVEL="${FUSION_LEVEL:-}"
+_SAVED_TEACHER_OUTPUT_TAG="${TEACHER_OUTPUT_TAG:-}"
+_SAVED_TOY_OUTPUT_TAG="${TOY_OUTPUT_TAG:-}"
+_SAVED_TOY_HARD_TOKEN="${TOY_HARD_TOKEN:-}"
+_SAVED_ECHOHATE_DATA_SEED_DIR="${ECHOHATE_DATA_SEED_DIR:-}"
+_SAVED_DATASETS="${DATASETS:-}"
+_SAVED_HARD_ENCODERS="${HARD_ENCODERS:-}"
+_SAVED_SKIP_ADAPT="${SKIP_ADAPT:-}"
+_SAVED_TRACK_DYNAMICS="${TRACK_DYNAMICS:-}"
+_SAVED_RANDOM_STATE="${RANDOM_STATE:-}"
+_SAVED_SEED="${SEED:-}"
+_SAVED_HATE_MECH_TAXONOMY="${HATE_MECH_TAXONOMY:-}"
+_SAVED_SPAN_CHANNELS="${SPAN_CHANNELS:-}"
+_SAVED_MECH_AUX_MODE="${MECH_AUX_MODE:-}"
+_SAVED_PACK_LAMBDA_GRID="${PACK_LAMBDA_GRID:-}"
+_SAVED_PACK_SBATCH_TIME="${PACK_SBATCH_TIME:-}"
+
+# Clear polluted teacher/grid env before defaults (same as from_local).
+if [[ "${KEEP_AMBIENT_TEACHER_ENV:-0}" != "1" ]]; then
+  unset TEACHER_OUTPUT_TAG TEACHER_OUTPUT_TAG_OVERRIDES \
+    TEACHER_OUTPUT_TAG_PHI TEACHER_OUTPUT_TAG_QWEN TEACHER_OUTPUT_TAG_LLAMA \
+    TEACHER_OUTPUT_TAG_OVERRIDES_PHI TEACHER_OUTPUT_TAG_OVERRIDES_QWEN \
+    TEACHER_OUTPUT_TAG_OVERRIDES_LLAMA TEACHER_LM_FAMILY \
+    LAMBDA_MECH_GRID CUE_LAMBDA_MECH_GRID CUE_LAMBDA_MECH E_INIT_GRID \
+    LAMBDA_TARGET_GRID LAMBDA_TARGET TARGET_NONE_POLICY PROMPT_MODE TARGET_ONLY \
+    STUDENT_MODEL_NAME VALIDATION_ROOT_ENCODER_BN MODEL_NAME \
+    CE_CONTRASTIVE_LAMBDA CE_CONTRASTIVE_LAMBDA_EXPLICIT \
+    BERT_PHI_NEW_PROMPT_ONLY_DATASETS BERT_PHI_NEW_PROMPT_TAG \
+    ENCODER_DATA_ROOT RANDOM_STATE SEED HATE_MECH_TAXONOMY SPAN_CHANNELS \
+    MECH_AUX_MODE PACK_LAMBDA_GRID PACK_SBATCH_TIME 2>/dev/null || true
+fi
+
+[[ -n "${_SAVED_CUE_LAMBDA_MECH_GRID}" ]] && export CUE_LAMBDA_MECH_GRID="${_SAVED_CUE_LAMBDA_MECH_GRID}"
+[[ -n "${_SAVED_E_INIT_GRID}" ]] && export E_INIT_GRID="${_SAVED_E_INIT_GRID}"
+[[ -n "${_SAVED_LAMBDA_MECH_GRID}" ]] && export LAMBDA_MECH_GRID="${_SAVED_LAMBDA_MECH_GRID}"
+[[ -n "${_SAVED_LAMBDA_TARGET_GRID}" ]] && export LAMBDA_TARGET_GRID="${_SAVED_LAMBDA_TARGET_GRID}"
+[[ -n "${_SAVED_TARGET_NONE_POLICY}" ]] && export TARGET_NONE_POLICY="${_SAVED_TARGET_NONE_POLICY}"
+[[ -n "${_SAVED_PROMPT_MODE}" ]] && export PROMPT_MODE="${_SAVED_PROMPT_MODE}"
+[[ -n "${_SAVED_TARGET_ONLY}" ]] && export TARGET_ONLY="${_SAVED_TARGET_ONLY}"
+[[ -n "${_SAVED_ENCODER_RUN_TAG}" ]] && export ENCODER_RUN_TAG="${_SAVED_ENCODER_RUN_TAG}"
+[[ -n "${_SAVED_APPROACH}" ]] && export APPROACH="${_SAVED_APPROACH}"
+[[ -n "${_SAVED_AMP_POOL}" ]] && export AMP_POOL="${_SAVED_AMP_POOL}"
+[[ -n "${_SAVED_FUSION_LEVEL}" ]] && export FUSION_LEVEL="${_SAVED_FUSION_LEVEL}"
+[[ -n "${_SAVED_TEACHER_OUTPUT_TAG}" ]] && export TEACHER_OUTPUT_TAG="${_SAVED_TEACHER_OUTPUT_TAG}"
+[[ -n "${_SAVED_TOY_OUTPUT_TAG}" ]] && export TOY_OUTPUT_TAG="${_SAVED_TOY_OUTPUT_TAG}"
+[[ -n "${_SAVED_TOY_HARD_TOKEN}" ]] && export TOY_HARD_TOKEN="${_SAVED_TOY_HARD_TOKEN}"
+[[ -n "${_SAVED_ECHOHATE_DATA_SEED_DIR}" ]] && export ECHOHATE_DATA_SEED_DIR="${_SAVED_ECHOHATE_DATA_SEED_DIR}"
+[[ -n "${_SAVED_DATASETS}" ]] && export DATASETS="${_SAVED_DATASETS}"
+[[ -n "${_SAVED_HARD_ENCODERS}" ]] && export HARD_ENCODERS="${_SAVED_HARD_ENCODERS}"
+[[ -n "${_SAVED_SKIP_ADAPT}" ]] && export SKIP_ADAPT="${_SAVED_SKIP_ADAPT}"
+[[ -n "${_SAVED_TRACK_DYNAMICS}" ]] && export TRACK_DYNAMICS="${_SAVED_TRACK_DYNAMICS}"
+[[ -n "${_SAVED_RANDOM_STATE}" ]] && export RANDOM_STATE="${_SAVED_RANDOM_STATE}"
+[[ -n "${_SAVED_SEED}" ]] && export SEED="${_SAVED_SEED}"
+[[ -n "${_SAVED_HATE_MECH_TAXONOMY}" ]] && export HATE_MECH_TAXONOMY="${_SAVED_HATE_MECH_TAXONOMY}"
+[[ -n "${_SAVED_SPAN_CHANNELS}" ]] && export SPAN_CHANNELS="${_SAVED_SPAN_CHANNELS}"
+[[ -n "${_SAVED_MECH_AUX_MODE}" ]] && export MECH_AUX_MODE="${_SAVED_MECH_AUX_MODE}"
+[[ -n "${_SAVED_PACK_LAMBDA_GRID}" ]] && export PACK_LAMBDA_GRID="${_SAVED_PACK_LAMBDA_GRID}"
+[[ -n "${_SAVED_PACK_SBATCH_TIME}" ]] && export PACK_SBATCH_TIME="${_SAVED_PACK_SBATCH_TIME}"
+
+export HATE_MECH_TAXONOMY=8way
+echo "[hpclogin] HATE_MECH_TAXONOMY=${HATE_MECH_TAXONOMY}"
+export ECHOHATE_DATA_SEED_DIR="${ECHOHATE_DATA_SEED_DIR:-eacl_seed0}"
+export DATASETS="${DATASETS:-HatEval}"
+export HARD_ENCODERS="${HARD_ENCODERS:-all}"
+export TEACHER_FAMILIES="${TEACHER_FAMILIES:-phi,qwen}"
+export TEACHER_OUTPUT_TAG="${TEACHER_OUTPUT_TAG:-_eacl_batch8}"
+export TOY_OUTPUT_TAG="${TOY_OUTPUT_TAG:-eacl}"
+export TOY_HARD_TOKEN="${TOY_HARD_TOKEN:-hard}"
+export TRACK_DYNAMICS="${TRACK_DYNAMICS:-1}"
+export LAMBDA_MECH_GRID="${LAMBDA_MECH_GRID:-0.01,0.05,0.1,0.5}"
+if [[ -z "${RANDOM_STATE:-}" ]]; then
+  if [[ "${ECHOHATE_DATA_SEED_DIR}" =~ eacl_seed([0-9]+)(_|$) ]]; then
+    RANDOM_STATE="${BASH_REMATCH[1]}"
+  elif [[ "${ECHOHATE_DATA_SEED_DIR}" =~ ^seed_([0-9]+) ]]; then
+    RANDOM_STATE="${BASH_REMATCH[1]}"
+  else
+    RANDOM_STATE=0
+  fi
+fi
+export RANDOM_STATE
+export RANDOM_STATE_OVERRIDE=1
+export BERT_PHI_NEW_PROMPT_ONLY_DATASETS="${BERT_PHI_NEW_PROMPT_ONLY_DATASETS:-}"
+export HPC_SSH_SUBMIT_MUX="${HPC_SSH_SUBMIT_MUX:-1}"
+export HPC_SSHPASS_FOR_MKDIR="${HPC_SSHPASS_FOR_MKDIR:-1}"
+# Login node cannot nvidia-smi on compute hosts; probing only slows submit.
+export HPLOGIN_DGX_PROBE_CUDA_NODES="${HPLOGIN_DGX_PROBE_CUDA_NODES:-0}"
+
+unset SBATCH_EXTRA 2>/dev/null || true
+_pin="${SBATCH_NODES:-${HPLOGIN_DGX_NODE_CSV:-hpc-dgx-b-2,hpc-dgx-b-3}}"
+export HPLOGIN_DGX_NODE_CSV="${_pin}"
+export SBATCH_NODES="${_pin}"
+if [[ "${_pin}" == *"hpc-dgx-b-3"* ]]; then
+  export SBATCH_ALLOW_DGX_B3=1
+fi
+
+_BOOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec bash "${_BOOT_DIR}/submit_mech_only_from_toy_prompt_hard_from_local.sh" "$@"

@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+title: EchoHate
+message: >-
+  If you use this software, please cite it using the metadata below
+  (and the accompanying paper when available).
+type: software
+authors:
+  - family-names: Phuc
+    given-names: Hong Huu
+    affiliation: Deakin University
+    email: hohuu@deakin.edu.au
+repository-code: ""
+license: MIT
+version: "0.1.0"
+date-released: "2026-10-02"
+abstract: >-
+  EchoHate: hate-speech and offensive-language detection with generative LLM
+  teachers and RoBERTa-family mechanism-distilled encoders (var25/rand hard
+  selection, toy_prompt 8-way teachers, mech_distill, hybrid LLM replacement).
+keywords:
+  - hate speech
+  - offensive language
+  - LLM teacher
+  - mechanism distillation
+  - RoBERTa
+preferred-citation:
+  type: article
+  title: "EchoHate (paper citation TBD)"
+  authors:
+    - family-names: Phuc
+      given-names: Hong Huu
+  year: 2026

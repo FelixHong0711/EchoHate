@@ -1,0 +1,31 @@
+# EchoHate Python dependencies — pinned to the Deakin HPC conda env `rag_v8_gpu`
+# (queried 2026-10-02 from ~/.conda/envs/rag_v8_gpu on hpclogin).
+#
+# Python: 3.10.x (HPC env reports 3.10.20)
+#
+# PyTorch CUDA wheel (install first; matches HPC torch 2.5.1+cu121):
+#   python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cu121
+#
+# Then:
+#   python -m pip install -r requirements.txt
+#
+# Cluster jobs default to CONDA_ENV=rag_v8_gpu (see job_submission/hpc_env_deakin.sh).
+# This partial release trains RoBERTa encoders only.
+# LLM teacher packages (peft, trl, bitsandbytes) are intentionally omitted
+# and will ship with the full release.
+
+# --- core ML ---
+# torch is intentionally unpinned here; install the CUDA wheel as above.
+accelerate==1.13.0
+transformers==5.3.0
+tokenizers==0.22.2
+huggingface-hub==1.17.0
+safetensors==0.7.0
+datasets==4.8.2
+
+# --- numeric / data ---
+numpy==2.2.6
+scipy==1.15.3
+pandas==2.3.3
+scikit-learn==1.7.2
+tqdm==4.67.3
