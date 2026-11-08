@@ -11,10 +11,9 @@ use ``--export-shell`` to emit env vars from JSON before running Python in the s
 
 Also provides ``set_seed`` with lazy torch/numpy imports.
 
-Training hyperparameters live in the same JSON under ``training``; they are applied
-from ``job_submission/training_hyper_defaults.sh`` (after ``echohate_seed_env.sh``)
-unless ``ECHOHATE_SKIP_PROJECT_TRAINING=1``. Use ``--export-training-shell`` for
-training-only lines, or ``--export-shell`` for seeds + split + training together.
+Training hyperparameters live in the same JSON under ``training``.
+``--export-training-shell`` prints those defaults as bash assignments.
+``--export-shell`` prints seeds, split fractions, and training defaults together.
 """
 from __future__ import annotations
 
@@ -88,7 +87,7 @@ def default_split_random_state() -> int:
 
 
 def default_random_state() -> int:
-    """Primary seed (Slurm RANDOM_STATE, --random_state, sklearn random_state, etc.). Default 0."""
+    """Primary seed for --random_state and sklearn. Default 0."""
     return int(_seeds().get("random_state", 0))
 
 
@@ -187,7 +186,7 @@ def _training_value(key: str, default: Any, typ: type) -> Any:
 
 
 def export_training_shell_snippet() -> str:
-    """Bash ``: \\\"${VAR:=value}\\\"`` lines so existing env overrides JSON (same semantics as training_hyper_defaults)."""
+    """Bash ``: \\\"${VAR:=value}\\\"`` lines so a pre-set environment variable overrides the JSON default."""
     if "training" not in load_project_config():
         return ""
     specs: list[tuple[str, str, Any, type]] = [
@@ -215,7 +214,7 @@ def export_training_shell_snippet() -> str:
 
 
 def export_shell_snippet() -> str:
-    """Bash ``: \\\"${VAR:=value}\\\"`` lines; pre-set env wins (same as training_hyper_defaults)."""
+    """Bash ``: \\\"${VAR:=value}\\\"`` lines; a pre-set environment variable wins."""
     rs = int(_seeds().get("random_state", 0))
     ss = _seeds()
     sweep = ss.get("seed_sweep")
@@ -250,7 +249,7 @@ def export_shell_snippet() -> str:
 def main() -> None:
     p = argparse.ArgumentParser(description="EchoHate project config helper")
     p.add_argument("--export-shell", action="store_true", help="Seeds + split env + training := defaults for eval")
-    p.add_argument("--export-training-shell", action="store_true", help="Training-only := lines (used by training_hyper_defaults.sh)")
+    p.add_argument("--export-training-shell", action="store_true", help="Print training defaults as bash assignments.")
     p.add_argument("--print-json", action="store_true", help="Print seeds, split fractions, and training as JSON")
     args = p.parse_args()
     if args.export_shell:

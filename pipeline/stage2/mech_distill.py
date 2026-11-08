@@ -160,7 +160,7 @@ def checkpoint_mechanism_compatible(
     state_dict: Optional[Dict[str, Any]] = None,
     expect_mech_head: bool = True,
 ) -> Tuple[bool, str]:
-    """Return (ok, message). Used by Slurm skip logic and eval loaders."""
+    """Return (ok, message). Used by checkpoint checks and eval loaders."""
     if not expect_mech_head:
         return True, "mechanism head disabled (lambda_mech=0); checkpoint compatible"
 
@@ -1597,8 +1597,7 @@ def main() -> None:
         raise SystemExit(
             f"ERROR: --require_gpu set but torch.cuda.is_available() is False. "
             f"CUDA_VISIBLE_DEVICES={cvd}. "
-            "If using Slurm, ensure GPU env is set before Python (see slurm_mech_distill_single.sh / hpc_cuda_slurm_defaults.sh). "
-            "Use a PyTorch build with CUDA."
+            "Use a PyTorch build with CUDA, and set CUDA_VISIBLE_DEVICES before starting Python."
         )
 
     set_seed(args.random_state)

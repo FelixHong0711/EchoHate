@@ -2,7 +2,7 @@
 """
 Check mech run-dir checkpoints against the current mechanism taxonomy.
 
-Exit codes (for Slurm / submit skip logic):
+Exit codes:
   0 — artifacts present and mechanism-head compatible (safe to skip training)
   1 — artifacts present but stale / incompatible (retrain)
   2 — required artifacts missing

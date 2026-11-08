@@ -139,12 +139,6 @@ Commands: `split`, `dynahate`, `ihc`, `ethos`, `sbic`, `hateval`,
 **Split policy:** DynaHate and SBIC keep official splits where available; IHC merges
 stages then random 80/10/10; other datasets follow each ingest script.
 
-Optional cluster wrappers:
-
-```bash
-bash job_submission/echohate_pipeline.sh help
-```
-
 ## Typical run
 
 Replace `<SEED>` with the data bucket (for example `seed_0_mech`).
@@ -199,7 +193,6 @@ config/
   echohate_project_config.json
 examples/
   mechanism_labels.csv
-job_submission/     optional HPC wrappers for the encoder stages
 ```
 
 ## Data layout

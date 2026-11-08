@@ -4,7 +4,7 @@ EchoHate: standalone RoBERTa baseline (no llm/aux losses), using distill-style H
 
 **Full fine-tune** — all RoBERTa encoder weights and the classification head are updated.
 
-Default CLI hyperparameters match `job_submission/training_hyper_defaults.sh` (epochs 6, batch 16, lr 1e-5, …).
+Default CLI hyperparameters are epochs 6, batch 16, learning rate 1e-5, weight decay 0.01, and maximum length 256.
 
 Data (default): train on **train.csv**, tune on **validation.csv**, infer on **test.csv**
 (unless ``--skip-test-infer``). Best epoch uses val τ tuned on grid 0.05–0.95 step 0.05
